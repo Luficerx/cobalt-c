@@ -17,7 +17,12 @@ int main(int argc, char **argv) {
     printf("%s\n", file);
 
     if (!lexer_init(&lexer, file)) { return 1; }
-    
+    if (!parser_init(&parser)) { return 1; }
+
+    if (!lexer_tokenize(&lexer, &parser)) { return 1; }
+
     lexer_destroy(&lexer);
+    parser_destroy(&parser);
+    
     return 0;
 }

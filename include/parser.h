@@ -43,10 +43,11 @@ typedef enum PrecedenceOps {
 
 /*
     Set default fields for the `Parser` struct and allocates `n` bytes to `Parser.items`.
-    Initially allocates `sizeof(*parser->items) * 256`.
-    The array will resize as new entries are added if the limit was reached
+    Initial size is determined by `sizeof(*parser->items) * 256` and grows bigger if needed.
+    
+    Returns `false` if `malloc` failed to return a valid pointer.
 */
-void parser_init(Parser *parser);
+bool parser_init(Parser *parser);
 
 // Free the memory allocated in `Parser.items` and set the rest of the fields to 0.
 void parser_destroy(Parser *parser);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "token.h"
+#include "core.h"
 
 const char *token_get_name(TokenKind kind) {
     switch (kind) {
@@ -107,5 +108,5 @@ const char *token_get_literal(TokenKind kind) {
 
 void token_log(Token token) {
     const char *name = token_get_name(token.kind);
-    printf("%s → %s\n", name, token.lexeme);
+    printf("%s → " CORE_RED "%s\n" CORE_END, name, token.lexeme);
 }
