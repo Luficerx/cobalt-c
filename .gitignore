@@ -1,2 +1,6 @@
+# Folders
 .vscode/
 bin/
+
+# Files (stupid ass vscodium;)
+.clangd

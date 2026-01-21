@@ -1,7 +1,23 @@
 #include <stdio.h>
 
-int main(void) {
-    printf("Hello World.\n");
+#include "array.h"
+#include "lexer.h"
+#include "parser.h"
+
+int main(int argc, char **argv) {
+    char *file;
+
+    Lexer lexer = {0};
+    Parser parser = {0};
+
+    file = array_shift_arg(argc, argv);
+    printf("%s\n", file);
     
+    file = array_shift_arg(argc, argv);
+    printf("%s\n", file);
+
+    if (!lexer_init(&lexer, file)) { return 1; }
+    
+    lexer_destroy(&lexer);
     return 0;
 }

@@ -1,14 +1,15 @@
-INCLUDE := $(wildcard ./include/*.c)
-SRC := $(wildcard ./src/*.c)
-
 PROG := ./bin/cobalt
 MAIN := ./main.c
 CC := gcc
+
+SRC := $(MAIN) $(wildcard ./src/*.c)
+
+CFLAGS := -I./include
 
 all: mkbin $(PROG)
 
 mkbin:
 	@mkdir -p bin
 
-$(PROG): $(MAIN)
-	$(CC) $(MAIN) -o $(PROG)
+$(PROG): $(SRC)
+	$(CC) $(CFLAGS) $(SRC) -o $(PROG) $(INCLUDE)
