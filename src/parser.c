@@ -8,7 +8,10 @@
 
 bool parser_init(Parser *parser) {
     parser->items = malloc(sizeof(*parser->items) * 256);
-    if (parser->items == NULL) return false;
+    if (parser->items == NULL) {
+        ERROR("Could not allocate memory for parser.");
+        return false;
+    }
 
     parser->len = 0;
     parser->size = 0;

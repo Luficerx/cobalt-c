@@ -143,6 +143,34 @@ do {                                          \
     (array)->len = 0;                         \
 } while (0)
 
+// Replace character at `index` with `item`.
+#define sb_replace(array, index, item)                                         \
+do {                                                                           \
+    assert(index >= -1 && "Can only replace indexes that are in range -1..N"); \
+    assert(index <= ((array)->len - 1) && "Index out of bounds");              \
+                                                                               \
+    if (index == -1) {                                                         \
+        (array)->items[(array)->len-1] = item;                                 \
+    } else {                                                                   \
+        (array)->items[index] = item;                                          \
+    }                                                                          \
+} while (0)
+
+// Dumbest trimmer ever created but who gives a fuck.
+#define sb_trim(array)                            \
+do {                                              \
+    char c;                                       \
+    while (true) {                                \
+        c = (array)->items[(array)->len-1];       \
+        if (c == ' ' || c == '\n' || c == '\0') { \
+            (array)->len--;                       \
+        } else {                                  \
+             (array)->items[(array)->len] = '\0'; \
+            break;                                \
+        }                                         \
+    }                                             \
+} while (0)
+
 /* ----------------------------------------- SECTION: Aliases ----------------------------------------- */
 
 #define sb_append array_append

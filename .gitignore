@@ -1,5 +1,6 @@
 # Folders
 .vscode/
+.ignore/
 bin/
 
 # Files (stupid ass vscodium;)

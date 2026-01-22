@@ -4,8 +4,10 @@
 #include <stdbool.h>
 
 #include "lexer.h"
+#include "array.h"
 #include "core.h"
 #include "parser.h"
+#include "token.h"
 
 bool lexer_init(Lexer *lexer, const char *filepath) {
     lexer->source = (StringBuilder){0};
@@ -28,7 +30,7 @@ bool lexer_load_source(Lexer *lexer, const char *filepath) {
     FILE *fptr;
 
     if ((fptr = fopen(filepath, "r")) == NULL) {
-        fprintf(stderr, CORE_RED"fatal error: "CORE_END"could not read file %s\n", filepath);
+        ERRORF("Could not read file: '%s'.", filepath);
         return false;
     }
     
@@ -43,7 +45,7 @@ bool lexer_load_source(Lexer *lexer, const char *filepath) {
 
     // Assumes that we only found EOF.
     if (lexer->source.len == 1) {
-        fprintf(stderr, CORE_RED"fatal error: "CORE_END"file is empty: %s\n", filepath);
+        ERRORF("File is empty: '%s'.", filepath);
         return false;
     }
 
@@ -76,11 +78,16 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
                     I have a feeling the second checking here can bring problems in the future */
 
                 if (c == '\n' || c == EOF) {
-                    sb_append(&sb, '\0');
-                    fprintf(stderr, "%s", line.items);
-                    fprintf(stderr, "%*s^\n", (int)pos-1, "~~~");
-                    fprintf(stderr, "%s:%ld:%ld"CORE_RED" fatal error: "CORE_END"Unterminated string literal\n", lexer->file, column, pos);
-                    return false;
+                    sb_trim(&line);
+                    LOGF(CORE_ERROR, "Unterminated string literal at '%s:%ld:%ld'", lexer->file, column, pos);
+                    LOG("%s", line.items);
+                    LOG("%*s^", (int)line.len, "~~~");
+                    
+                    sb_clear(&sb);
+                    token = (Token){0};
+                    mode = TM_NONE;
+
+                    continue;
                 }
 
                 if (c == '\\') {
