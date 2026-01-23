@@ -114,7 +114,9 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
             }
 
             case TM_NUMBER_LIT: {
-                if (!isdigit(c) && c != '_' && sb.items[sb.len] != 'f' && c != 'f') {
+                if (c == '_') continue; 
+
+                if (!isdigit(c) && sb.items[sb.len] != 'f' && c != 'f') {
                     sb_append(&sb, '\0');
                     token.lexeme = strdup(sb.items);
                     token.kind = TK_NUMBER_LIT;
