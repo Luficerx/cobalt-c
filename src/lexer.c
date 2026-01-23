@@ -78,7 +78,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
                     I have a feeling the second checking here can bring problems in the future */
 
                 if (c == '\n' || c == EOF) {
-                    sb_trim(&line);
+                    sb_trimr(&line);
                     LOGF(CORE_ERROR, "Unterminated string literal at '%s:%ld:%ld'", lexer->file, column, pos);
                     LOG("%s", line.items);
                     LOG("%*s^", (int)line.len, "~~~");

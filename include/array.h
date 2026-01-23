@@ -157,7 +157,8 @@ do {                                                                           \
 } while (0)
 
 // Dumbest trimmer ever created but who gives a fuck.
-#define sb_trim(array)                            \
+
+#define sb_trimr(array)                           \
 do {                                              \
     char c;                                       \
     while (true) {                                \
@@ -169,6 +170,20 @@ do {                                              \
             break;                                \
         }                                         \
     }                                             \
+} while (0)
+
+#define sb_triml(array)       \
+do {                          \
+    char c;                   \
+    while (true) {            \
+        c = *(array)->items;  \
+        if (c == ' ') {       \
+            (array)->items++; \
+            (array)->len--;   \
+        } else {              \
+            break;            \
+        }                     \
+    }                         \
 } while (0)
 
 /* ----------------------------------------- SECTION: Aliases ----------------------------------------- */
