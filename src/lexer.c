@@ -43,13 +43,13 @@ bool lexer_load_source(Lexer *lexer, const char *filepath) {
     // Push EOF into the string;
     sb_append(&lexer->source, c);
 
+    fclose(fptr);
+
     // Assumes that we only found EOF.
     if (lexer->source.len == 1) {
-        ERRORF("File is empty: '%s'.", filepath);
-        return false;
+        LOGF(CORE_WARN, "File is empty: '%s'.", filepath);
     }
 
-    fclose(fptr);
     return true;
 }
 
