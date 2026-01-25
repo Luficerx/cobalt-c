@@ -23,7 +23,7 @@ void lexer_destroy(Lexer *lexer);
 
 /*
     Loads `filepath` contents into `lexer->source`.
-    This function returns `false` if the file is empty or if any error happen.
+    This function returns `false` if an error happen.
 */
 bool lexer_load_source(Lexer *lexer, const char *filepath);
 
