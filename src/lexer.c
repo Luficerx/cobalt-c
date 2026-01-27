@@ -4,12 +4,15 @@
 #include <stdbool.h>
 
 #include "lexer.h"
-#include "array.h"
 #include "core.h"
-#include "parser.h"
-#include "token.h"
+#include "string_arena.h"
+
+// Internal arena to store the tokens strings.
+StringArena *lexemes_arena;
 
 bool lexer_init(Lexer *lexer, const char *filepath) {
+    lexemes_arena = sa_init();
+
     lexer->source = (StringBuilder){0};
     lexer->file = filepath;
     lexer->pos = 0;
@@ -21,7 +24,7 @@ bool lexer_init(Lexer *lexer, const char *filepath) {
 
 void lexer_destroy(Lexer *lexer) {
     array_free(&lexer->source);
-
+    sa_destroy(lexemes_arena);
     lexer->file = NULL;
     lexer->pos = 0;
 }
@@ -99,7 +102,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
                 if ((sb.items[0] == '"' && c == '"') || (sb.items[0] == '\'' && c == '\'')) {
                     sb_append(&sb, c);
                     sb_append(&sb, '\0');
-                    token.lexeme = strdup(sb.items);
+                    token.lexeme = sa_dup(lexemes_arena, sb.items);
                     token.kind = TK_STRING_LIT;
                     
                     array_append(parser, token);
@@ -118,7 +121,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
 
                 if (!isdigit(c) && sb.items[sb.len] != 'f' && c != 'f') {
                     sb_append(&sb, '\0');
-                    token.lexeme = strdup(sb.items);
+                    token.lexeme = sa_dup(lexemes_arena, sb.items);
                     token.kind = TK_NUMBER_LIT;
                     
                     array_append(parser, token);
@@ -136,7 +139,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
             case TM_HEX_LIT: {
                 if (!lexer_char_in_az(c) && !lexer_char_in_09(c)) {
                     sb_append(&sb, '\0');
-                    token.lexeme = strdup(sb.items);
+                    token.lexeme = sa_dup(lexemes_arena, sb.items);
                     token.kind = TK_HEX_LIT;
                     
                     array_append(parser, token);
@@ -179,7 +182,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
             case TM_GENERIC: {
                 if (!lexer_char_in_az(c) && !lexer_char_in_09(c) && (c != '_')) {
                     sb_append(&sb, '\0');
-                    token.lexeme = strdup(sb.items);
+                    token.lexeme = sa_dup(lexemes_arena, sb.items);
                     if (!lexer_lexeme_is_keyword(&token)) {
                         token.kind = TK_IDENTIFIER;
                     }

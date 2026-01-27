@@ -4,7 +4,8 @@ CC := gcc
 
 SRC := $(MAIN) $(wildcard ./src/*.c)
 
-CFLAGS := -I./include
+FLAGS := -Wall -Wextra -ggdb
+CFLAGS := -I./include $(FLAGS)
 
 all: mkbin $(PROG)
 
