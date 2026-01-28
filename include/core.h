@@ -29,7 +29,7 @@ do {                                                                  \
 } while (0)
 
 #define ERROR(buf) fprintf(CORE_ERRTO,                    \
-                               "%s:%d" CORE_ERROR "%s\n", \
+                               "%s:%d " CORE_ERROR "%s\n", \
                                __FILE__, __LINE__, buf)
 
 #define ERRORF(buf, ...) fprintf(CORE_ERRTO, CORE_ERROR buf "\n", __VA_ARGS__)

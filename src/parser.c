@@ -6,7 +6,7 @@
 #include "token.h"
 #include "core.h"
 
-bool parser_init(Parser *parser) {
+bool parser_init(Parser *parser, char *filepath) {
     parser->items = malloc(sizeof(*parser->items) * 256);
     if (parser->items == NULL) {
         ERROR("Could not allocate memory for parser.");
@@ -17,6 +17,7 @@ bool parser_init(Parser *parser) {
     parser->size = 0;
     parser->pos = 0;
 
+    parser->filepath = filepath;
     return true;
 }
 
@@ -25,6 +26,7 @@ void parser_destroy(Parser *parser) {
     parser->len = 0;
     parser->size = 0;
     parser->pos = 0;
+    parser->filepath = NULL;
 }
 
 Token parser_get_token(Parser *parser) {
@@ -37,6 +39,10 @@ Token parser_next_token(Parser *parser) {
 
 void parser_advance(Parser *parser) {
     parser->pos++;
+}
+
+bool parser_complete(Parser *parser) {
+    return parser->pos >= (parser->len - 1);
 }
 
 void parser_log(Parser parser) {

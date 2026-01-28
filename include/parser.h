@@ -11,6 +11,8 @@ typedef struct Parser {
     size_t size;
     size_t len;
     size_t pos;
+    
+    char *filepath; // Exclusively for error reporting.
 } Parser;
 
 typedef enum PrecedenceOps {
@@ -47,7 +49,7 @@ typedef enum PrecedenceOps {
     
     Returns `false` if `malloc` failed to return a valid pointer.
 */
-bool parser_init(Parser *parser);
+bool parser_init(Parser *parser, char* file);
 
 // Free the memory allocated in `Parser.items` and set the rest of the fields to 0.
 void parser_destroy(Parser *parser);
@@ -63,6 +65,15 @@ Token parser_get_token(Parser *parser);
 
 // Get the next token in the list.
 Token parser_next_token(Parser *parser);
+
+// Advances the position of the parser.
+void parser_advance(Parser *parser);
+
+/*
+    Returns `true` if all tokens in the parser were consumed.
+    `TK_EOF` token is discarded.
+*/
+bool parser_complete(Parser *parser);
 
 // Print basic information about `Parser` struct.
 void parser_log(Parser parser);
