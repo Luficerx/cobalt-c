@@ -1,6 +1,9 @@
 # Folders
 .vscode/
 .ignore/
+
+# Issues i track for this project
+issues/
 bin/
 
 # Files (stupid ass vscodium;)

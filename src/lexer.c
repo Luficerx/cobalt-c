@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "lexer.h"
+#include "array.h"
 #include "core.h"
 #include "string_arena.h"
 
@@ -234,7 +235,17 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
         if (c == '\n') {
             column += 1;
             pos = 0;
+            
+            if (!lexer_is_line_empty(line)) {
+                token.lexeme = "NL";
+                token.kind = TK_NL;
+                
+                array_append(parser, token);
+                token = (Token){0};
+            }
+
             sb_clear(&line);
+            continue;
         }
 
         if (c == '/' && lexer_next_char_is(lexer->source, i, '/')) {
@@ -526,6 +537,15 @@ bool lexer_lexeme_is_keyword(Token *token) {
     
     return false;
 }
+
+bool lexer_is_line_empty(StringBuilder line) {
+    for (size_t i = 0; i < line.len; ++i) {
+        if (!lexer_char_space_or_nline(line.items[i])) {
+            return false;
+        }
+    }
+    return true;
+} 
 
 void lexer_log(Lexer lexer) {
     printf("Lexer Log:\n");

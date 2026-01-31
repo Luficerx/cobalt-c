@@ -7,36 +7,34 @@
 #include "token.h"
 
 ASTNode *ast_astify(Parser *parser) {
-    ASTNode *root = ast_expr(parser);
+    ASTNode *expr = ast_expr(parser);
     parser_advance(parser);
-    return root;
+    return expr;
 }
 
 ASTNode *ast_expr(Parser *parser) {
     ASTNode *left = ast_term(parser);
-    
     Token t = parser_get_token(parser);
     
     while (t.kind == TK_ADD || t.kind == TK_SUB) {
-        t = parser_get_token(parser);
         parser_advance(parser);
         ASTNode *right = ast_term(parser);
         left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
     }
-    
+
     return left;
 }
 
 ASTNode *ast_term(Parser *parser) {
     ASTNode *left = ast_factor(parser);
-
     Token t = parser_get_token(parser);
 
     while (t.kind == TK_STAR || t.kind == TK_SLASH) {
-        t = parser_get_token(parser);
         parser_advance(parser);
         ASTNode *right = ast_term(parser);
         left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
     }
 
     return left;
@@ -44,10 +42,30 @@ ASTNode *ast_term(Parser *parser) {
 
 ASTNode *ast_factor(Parser *parser) {
     Token t = parser_get_token(parser);
+
     if (t.kind == TK_NUMBER_LIT) {
         int number = atoi(t.lexeme);
         parser_advance(parser);
         return ast_number(number);
+    }
+
+    if (t.kind == TK_LPAREN) {
+        parser_advance(parser);
+
+        if (parser_get_token(parser).kind == TK_RPAREN) {
+            parser_advance(parser);
+            return ast_node(NULL, NULL);
+        }
+        
+        ASTNode *expr = ast_expr(parser);
+        t = parser_get_token(parser);
+        
+        if (!ast_expect(t, TK_RPAREN)) {
+            ERRORF("Expected ')' but found %s", token_get_name(t.kind));
+        }
+
+        parser_advance(parser);
+        return expr;
     }
 
     ERRORF("%s:%d reached end of function %s()", __FILE__, __LINE__, __func__);
@@ -85,17 +103,17 @@ void ast_log(ASTNode *node, int level) {
     for (int i = 0; i < level; ++i) {
         printf("    ");
     }
-
+    
     switch (node->type) {
         case T_STMT:
-            if (node->l) ast_log(node, level + 1);
-            if (node->r) ast_log(node, level + 1);
+            if (node->l) ast_log(node->l, level + 1);
+            if (node->r) ast_log(node->r, level + 1);
             break;
-
+        
         case T_BINARY:
-            if (node->l) ast_log(node, level + 1);
-            if (node->r) ast_log(node, level + 1);
             if (node->op) printf("OP: %s\n", node->op);
+            if (node->l) ast_log(node->l, level + 1);
+            if (node->r) ast_log(node->r, level + 1);
             break;
 
         case T_NUMBER:

@@ -22,8 +22,8 @@ const char *token_get_name(TokenKind kind) {
         case TK_PIPE:       return "PIPE";
         case TK_COMMA:      return "COMMA";
         case TK_DOT:        return "DOT";
-        case TK_ADD:        return "PLUS";
-        case TK_SUB:        return "MINUS";
+        case TK_ADD:        return "ADD";
+        case TK_SUB:        return "SUB";
         case TK_STAR:       return "STAR";
         case TK_SLASH:      return "SLASH";
         case TK_MOD:        return "MOD";
@@ -49,6 +49,7 @@ const char *token_get_name(TokenKind kind) {
         case TK_XOR:        return "XOR";
         case TK_INC_OP:     return "INC_OP";
         case TK_DEC_OP:     return "DEC_OP";
+        case TK_NL:         return "NL";
         case TK_EOF:        return "EOF";
     }
     return "UNREACHABLE";

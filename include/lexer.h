@@ -65,10 +65,17 @@ bool lexer_char_in_09(char c);
 bool lexer_next_char_in_09(StringBuilder sb, size_t i);
 
 /*
-Checks if the `token->lexeme` is an keyword.
-This function also sets `token->kind` to `TK_KEYWORD` if a keyword was found.
+    Checks if the `token->lexeme` is an keyword.
+    This function also sets `token->kind` to `TK_KEYWORD` if a keyword was found.
 */
 bool lexer_lexeme_is_keyword(Token *token);
+
+/*
+    Checks if the current line is not empty.
+    Spaces and new-lines determines count as empty.
+*/
+
+bool lexer_is_line_empty(StringBuilder line);
 
 // Print the contents of `Lexer` struct.
 void lexer_log(Lexer lexer);
