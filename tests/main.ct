@@ -1,5 +1,5 @@
-1 + 2
+def square(x: int): int {
+    return x * x
+}
 
-3 / 3
-
-(34 * 2) + 1
+result := square(2)

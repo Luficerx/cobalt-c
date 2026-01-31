@@ -70,7 +70,8 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
         char c = lexer->source.items[i];
         ++pos;
 
-        /*  HACK: (25-12-05 22:30:36)
+        /*  
+            HACK: (25-12-05 22:30:36)
             Construct the line for reporting purposes, dumb approach!
         */
         sb_append(&line, c);
@@ -157,11 +158,13 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
 
             case TM_MCOMMENT: {
                 if (c == '*' && lexer_next_char_is(lexer->source, i, '/')) {
+                    sb_clear(&line);
                     mode = TM_NONE;
+                    column += 1;;
                     ++i;
                     continue;
                 }
-                        
+                
                 if (c == '\n') {
                     column += 1;
                     pos = 0;
@@ -175,7 +178,10 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
                     mode = TM_NONE;
                 }
 
-                if (c == '\n') { mode = TM_NONE; }
+                if (c == '\n') {
+                    mode = TM_NONE;
+                    sb_clear(&line);
+                }
 
                 continue;
             }
@@ -208,7 +214,7 @@ bool lexer_tokenize(Lexer *lexer, Parser *parser) {
         
         token.column = column;
         token.line = pos;
-
+        
         if (c == EOF) {
             token.lexeme = "EOF";
             token.kind = TK_EOF;

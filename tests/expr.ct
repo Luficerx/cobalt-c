@@ -1,0 +1,21 @@
+// Normal
+10 * 10
+5 / 5
+34 + 35
+
+// Normal + Semicolon
+0; 10 * 10
+5 / 5;
+420
+
+// Nested expressions
+1 + (2 - (4 * (5 / 7)))
+7 + (8 - (9 * (10 / 11)))
+
+// Whatever the fuck this abomination is -\(-_ -)/-
+1 + ( 
+  ( 2000 - 
+  ( 3 * 4
+    ) / 5
+) + 6
+  ) - 7

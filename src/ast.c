@@ -23,6 +23,12 @@ ASTNode *ast_expr(Parser *parser) {
         t = parser_get_token(parser);
     }
 
+    // Handle the case of semicolon followed by new line.
+    if (ast_expect(parser_get_token(parser), TK_SEMICOLON) &&
+        ast_expect(parser_next_token(parser), TK_NL)) {
+        parser_advance(parser);
+    }
+
     return left;
 }
 
@@ -43,6 +49,9 @@ ASTNode *ast_term(Parser *parser) {
 ASTNode *ast_factor(Parser *parser) {
     Token t = parser_get_token(parser);
 
+    // Skip new line at the end if exists.
+    if (t.kind == TK_NL) { parser_advance(parser); t = parser_get_token(parser); }
+
     if (t.kind == TK_NUMBER_LIT) {
         int number = atoi(t.lexeme);
         parser_advance(parser);
@@ -59,9 +68,14 @@ ASTNode *ast_factor(Parser *parser) {
         
         ASTNode *expr = ast_expr(parser);
         t = parser_get_token(parser);
-        
+
+        if (t.kind == TK_NL) {
+            parser_advance(parser);
+            t = parser_get_token(parser); 
+        }
+
         if (!ast_expect(t, TK_RPAREN)) {
-            ERRORF("Expected ')' but found %s", token_get_name(t.kind));
+            LOGF("", "%s:%ld:%ld "CORE_ERROR"Expected ')' but found '%s'", parser->filepath, t.column, t.line, token_get_literal(t.kind));
         }
 
         parser_advance(parser);
@@ -111,13 +125,13 @@ void ast_log(ASTNode *node, int level) {
             break;
         
         case T_BINARY:
-            if (node->op) printf("OP: %s\n", node->op);
+            if (node->op) printf("OP: [%s]\n", node->op);
             if (node->l) ast_log(node->l, level + 1);
             if (node->r) ast_log(node->r, level + 1);
             break;
 
         case T_NUMBER:
-            printf("NUMBER: %d\n", node->value.number);
+            printf("NUMBER: [%d]\n", node->value.number);
             break;
     }
 }
