@@ -37,6 +37,10 @@ typedef struct ASTNode {
 
 ASTNode *ast_astify(Parser *parser);
 ASTNode *ast_expr(Parser *parser);
+ASTNode *ast_or(Parser *parser);
+ASTNode *ast_and(Parser *parser);
+ASTNode *ast_equal(Parser *parser);
+ASTNode *ast_comp(Parser *parser);
 ASTNode *ast_factor(Parser *parser);
 ASTNode *ast_term(Parser *parser);
 ASTNode *ast_binary(char *op, ASTNode *l, ASTNode *r);

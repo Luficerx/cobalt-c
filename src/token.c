@@ -109,5 +109,5 @@ const char *token_get_literal(TokenKind kind) {
 
 void token_log(Token token) {
     const char *name = token_get_name(token.kind);
-    printf("%s → " CORE_RED "%s\n" CORE_END, name, token.lexeme);
+    printf("%s → " CORE_RED "%s" CORE_END "\n", name, token.lexeme);
 }

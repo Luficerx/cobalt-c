@@ -13,6 +13,7 @@
 #endif // CORE_ERRTO
 
 #define CORE_NONE ""
+#define CORE_INFO CORE_BLUE "[INFO] " CORE_END
 #define CORE_ERROR CORE_RED "[ERROR] " CORE_END
 #define CORE_FATAL CORE_RED "[FATAL] " CORE_END
 #define CORE_WARN CORE_YELLOW "[WARNING] "CORE_END
@@ -35,6 +36,7 @@ do {                                                                  \
 #define ERRORF(buf, ...) fprintf(CORE_ERRTO, CORE_ERROR buf "\n", __VA_ARGS__)
 
 #define LOG(buf, ...) fprintf(CORE_ERRTO, buf "\n", __VA_ARGS__)
+#define LOGT(type, buf) fprintf(CORE_ERRTO, type buf "\n")
 #define LOGF(type, buf, ...) fprintf(CORE_ERRTO, type buf "\n", __VA_ARGS__)
 
 #endif // CORE_H

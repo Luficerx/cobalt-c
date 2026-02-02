@@ -1,32 +1,124 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-#include "core.h"
 #include "ast.h"
+#include "core.h"
 #include "parser.h"
 #include "token.h"
 
 ASTNode *ast_astify(Parser *parser) {
-    ASTNode *expr = ast_expr(parser);
-    parser_advance(parser);
+    ASTNode *expr = ast_or(parser);
+
+    if (ast_expect(parser_get_token(parser), TK_SEMICOLON)) { parser_advance(parser); }
+    if (ast_expect(parser_get_token(parser), TK_NL)) { parser_advance(parser); }
+    
     return expr;
+}
+
+ASTNode *ast_or(Parser *parser) {
+    ASTNode *left = ast_and(parser);
+    Token t = parser_get_token(parser);
+
+    if (t.kind == TK_NL) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+    
+    while (t.kind == TK_OR_OP) {
+        parser_advance(parser);
+        ASTNode *right = ast_and(parser);
+        left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
+        
+        if (t.kind == TK_NL) { parser_advance(parser); }
+    }
+
+    return left;
+}
+
+ASTNode *ast_and(Parser *parser) {
+    ASTNode *left = ast_equal(parser);
+    Token t = parser_get_token(parser);
+
+    if (t.kind == TK_NL) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+    
+    while (t.kind == TK_AND_OP) {
+        parser_advance(parser);
+        ASTNode *right = ast_equal(parser);
+        left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
+        
+        if (t.kind == TK_NL) { parser_advance(parser); }
+    }
+
+    return left;
+}
+
+ASTNode *ast_equal(Parser *parser) {
+    ASTNode *left = ast_comp(parser);
+    Token t = parser_get_token(parser);
+
+    if (t.kind == TK_NL) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+    
+    while (t.kind == TK_EQUALS || t.kind == TK_NEQUALS) {
+        parser_advance(parser);
+        ASTNode *right = ast_comp(parser);
+        left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
+        
+        if (t.kind == TK_NL) { parser_advance(parser); }
+    }
+
+    return left;
+}
+
+ASTNode *ast_comp(Parser *parser) {
+    ASTNode *left = ast_expr(parser);
+    Token t = parser_get_token(parser);
+
+    if (t.kind == TK_NL) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+    
+    while (t.kind == TK_GREATER || t.kind == TK_LESSER || t.kind == TK_GEQUALS || t.kind == TK_LEQUALS) {
+        parser_advance(parser);
+        ASTNode *right = ast_expr(parser);
+        left = ast_binary(t.lexeme, left, right);
+        t = parser_get_token(parser);
+        
+        if (t.kind == TK_NL) { parser_advance(parser); }
+    }
+    
+    return left;
 }
 
 ASTNode *ast_expr(Parser *parser) {
     ASTNode *left = ast_term(parser);
     Token t = parser_get_token(parser);
-    
+   
+    if (ast_expect(t, TK_NL)) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+
     while (t.kind == TK_ADD || t.kind == TK_SUB) {
         parser_advance(parser);
         ASTNode *right = ast_term(parser);
         left = ast_binary(t.lexeme, left, right);
         t = parser_get_token(parser);
-    }
 
-    // Handle the case of semicolon followed by new line.
-    if (ast_expect(parser_get_token(parser), TK_SEMICOLON) &&
-        ast_expect(parser_next_token(parser), TK_NL)) {
-        parser_advance(parser);
+        if (ast_expect(t, TK_NL)) {
+            parser_advance(parser);
+            t = parser_get_token(parser);
+        }
     }
 
     return left;
@@ -36,11 +128,21 @@ ASTNode *ast_term(Parser *parser) {
     ASTNode *left = ast_factor(parser);
     Token t = parser_get_token(parser);
 
+    if (ast_expect(t, TK_NL)) {
+        parser_advance(parser);
+        t = parser_get_token(parser);
+    }
+
     while (t.kind == TK_STAR || t.kind == TK_SLASH) {
         parser_advance(parser);
         ASTNode *right = ast_term(parser);
         left = ast_binary(t.lexeme, left, right);
         t = parser_get_token(parser);
+    
+        if (ast_expect(t, TK_NL)) {
+            parser_advance(parser);
+            t = parser_get_token(parser);
+        }
     }
 
     return left;
@@ -66,7 +168,7 @@ ASTNode *ast_factor(Parser *parser) {
             return ast_node(NULL, NULL);
         }
         
-        ASTNode *expr = ast_expr(parser);
+        ASTNode *expr = ast_or(parser);
         t = parser_get_token(parser);
 
         if (t.kind == TK_NL) {

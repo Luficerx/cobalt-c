@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     while (!parser_complete(&parser)) {
         ASTNode *root = ast_astify(&parser);
         ast_log(root, 0);
+        printf("======================================================\n");
         ast_free(root);
     }
 

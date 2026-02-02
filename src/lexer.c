@@ -532,6 +532,7 @@ bool lexer_lexeme_is_keyword(Token *token) {
         strcmp("macro", token->lexeme) == 0 ||
         strcmp("const", token->lexeme) == 0 ||
         strcmp("type", token->lexeme) == 0 ||
+        strcmp("def", token->lexeme) == 0 ||
 
         strcmp("if", token->lexeme) == 0 ||
         strcmp("elif", token->lexeme) == 0 ||
